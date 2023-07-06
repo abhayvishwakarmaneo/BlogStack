@@ -1,0 +1,23 @@
+server:
+  port: 9090
+
+spring:
+  application:
+    name: ${MASTER_SERVICE_APPLICATION_NAME:BlogStackMasterService}
+
+  datasource:
+    url: ${MASTER_SERVICE_DATABASE_URL:jdbc:postgresql://localhost:5432/BlogStackMaster}
+    username: ${MASTER_SERVICE_DATABASE_USERNAME:postgres}
+    password: ${MASTER_SERVICE_DATABASE_PASSWORD:root}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+#  liquibase:
+#    change-log: classpath:db/changelog/changelog.sql
+#    url: ${MASTER_SERVICE_DATABASE_LIQUIBASE_URL:jdbc:postgresql://localhost:5432/BlogStackMaster}
+#    user: ${MASTER_SERVICE_DATABASE_USERNAME:postgres}
+#    password: ${MASTER_SERVICE_DATABASE_PASSWORD:root}
+#    database-change-log-table: databasechangelog_blogstack_master_service
+#    database-change-log-lock-table: databasechangeloglock_blogstack_master_service
