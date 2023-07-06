@@ -103,6 +103,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>blogstack-master-service</finalName>
     </build>
 
 </project>
