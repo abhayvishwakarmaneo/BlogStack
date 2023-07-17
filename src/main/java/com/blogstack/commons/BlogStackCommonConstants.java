@@ -58,4 +58,7 @@ public enum BlogStackCommonConstants {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public final String DOUBLE_BACKSLASH_CARET_STRING = "\\^";
+
+    public final String DATA_NOT_FOUND = "Data not found.";
+
 }
