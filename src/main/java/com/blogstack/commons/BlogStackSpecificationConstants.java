@@ -61,4 +61,5 @@ public enum BlogStackSpecificationConstants {
     public final String BIGINTEGER = "biginteger";
 
     public final String BIGDECIMAL = "bigdecimal";
+
 }

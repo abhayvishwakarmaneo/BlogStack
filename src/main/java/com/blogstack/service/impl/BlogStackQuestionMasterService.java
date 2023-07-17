@@ -3,6 +3,7 @@ package com.blogstack.service.impl;
 import com.blogstack.beans.requests.QuestionMasterRequestBean;
 import com.blogstack.beans.responses.PageResponseBean;
 import com.blogstack.beans.responses.ServiceResponseBean;
+import com.blogstack.commons.BlogStackCommonConstants;
 import com.blogstack.entities.BlogStackQuestionMaster;
 import com.blogstack.entity.pojo.mapper.IBlogStackQuestionMasterEntityPojoMapper;
 import com.blogstack.enums.QuestionMasterStatusEnum;
@@ -82,7 +83,7 @@ public class BlogStackQuestionMasterService implements IBlogStackQuestionMasterS
                         .totalPages(blogStackQuestionMasterPage.getTotalPages())
                         .currentPage(blogStackQuestionMasterPage.getNumber())
                         .build()).build())
-                : Mono.error(new BlogstackDataNotFoundException("Data not found."));
+                : Mono.error(new BlogstackDataNotFoundException(BlogStackCommonConstants.INSTANCE.DATA_NOT_FOUND));
     }
 
     @Override
@@ -91,7 +92,7 @@ public class BlogStackQuestionMasterService implements IBlogStackQuestionMasterS
         LOGGER.info("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
 
         if(blogStackQuestionMasterOptional.isEmpty())
-            return Mono.error(new BlogstackDataNotFoundException("Question not found."));
+            return Mono.error(new BlogstackDataNotFoundException(BlogStackCommonConstants.INSTANCE.DATA_NOT_FOUND));
 
         return Mono.just(ServiceResponseBean.builder().status(Boolean.TRUE).data(IBlogStackQuestionMasterEntityPojoMapper.mapQuestionMasterEntityPojoMapping.apply(blogStackQuestionMasterOptional.get())).build());
     }
@@ -102,7 +103,7 @@ public class BlogStackQuestionMasterService implements IBlogStackQuestionMasterS
         LOGGER.debug("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
 
         if (blogStackQuestionMasterOptional.isEmpty())
-            return Mono.error(new BlogstackDataNotFoundException("Question not found."));
+            return Mono.error(new BlogstackDataNotFoundException(BlogStackCommonConstants.INSTANCE.DATA_NOT_FOUND));
 
         questionMasterRequestBean.setModifiedBy(this.springApplicationName);
         BlogStackQuestionMaster blogStackQuestionMaster = this.blogStackQuestionMasterPojoEntityMapper.INSTANCE.updateQuestionMaster.apply(questionMasterRequestBean, blogStackQuestionMasterOptional.get());
@@ -118,7 +119,7 @@ public class BlogStackQuestionMasterService implements IBlogStackQuestionMasterS
         LOGGER.info("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
 
         if(blogStackQuestionMasterOptional.isEmpty())
-            return Mono.just(ServiceResponseBean.builder().status(Boolean.FALSE).message("Question not found.").build());
+            return Mono.just(ServiceResponseBean.builder().status(Boolean.FALSE).message(BlogStackCommonConstants.INSTANCE.DATA_NOT_FOUND).build());
 
         blogStackQuestionMasterOptional.get().setBsqmStatus(QuestionMasterStatusEnum.DELETED.getValue());
         blogStackQuestionMasterOptional.get().setBsqmModifiedBy(springApplicationName);
