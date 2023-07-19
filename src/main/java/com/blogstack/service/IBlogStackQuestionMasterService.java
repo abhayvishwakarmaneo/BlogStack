@@ -1,7 +1,6 @@
 package com.blogstack.service;
 
 import com.blogstack.beans.requests.QuestionMasterRequestBean;
-import com.blogstack.entities.BlogStackQuestionMaster;
 import reactor.core.publisher.Mono;
 
 public interface IBlogStackQuestionMasterService {
