@@ -40,15 +40,15 @@ public class BlogStackSubcategoryMasterService implements IBlogStackSubcategoryM
     private IBlogStackSubcategoryMasterPojoEntityMapper blogStackSubcategoryMasterPojoEntityMapper;
 
     @Override
-    public Optional<?> addSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean) {
+    public Optional<ServiceResponseBean> addSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean) {
         Optional<BlogStackSubcategoryMaster> blogStackSubcategoryMasterOptional = this.blogStackSubcategoryMasterRepository.findByBsscmSubcategoryIgnoreCase(subcategoryMasterRequestBean.getSubcategory());
-        LOGGER.info("BlogStackSubcategoryMasterOptional :: {}", blogStackSubcategoryMasterOptional);
+        LOGGER.warn("BlogStackSubcategoryMasterOptional :: {}", blogStackSubcategoryMasterOptional);
 
         if(blogStackSubcategoryMasterOptional.isPresent())
             return Optional.of(ServiceResponseBean.builder().status(Boolean.FALSE).message("Subcategory Already Present.").build());
 
         String subcategoryId = BlogStackCommonUtils.INSTANCE.uniqueIdentifier(UuidPrefixEnum.SUBCATEGORY_ID.getValue());
-        LOGGER.info("SubcategoryId :: {}", subcategoryId);
+        LOGGER.warn("SubcategoryId :: {}", subcategoryId);
 
         subcategoryMasterRequestBean.setSubcategoryId(subcategoryId);
         subcategoryMasterRequestBean.setCreatedBy(springApplicationName);
@@ -58,49 +58,51 @@ public class BlogStackSubcategoryMasterService implements IBlogStackSubcategoryM
     }
 
     @Override
-    public Optional<?> fetchSubcategoryById(String subcategoryId) {
+    public Optional<ServiceResponseBean> fetchSubcategoryById(String subcategoryId) {
         Optional<BlogStackSubcategoryMaster> blogStackSubcategoryMasterOptional = this.blogStackSubcategoryMasterRepository.findByBsscmSubcategoryId(subcategoryId);
 
         if(blogStackSubcategoryMasterOptional.isEmpty())
-            return Optional.of(new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND));
+            throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);
 
         return Optional.of(ServiceResponseBean.builder().status(Boolean.TRUE).data(IBlogStackSubcategoryMasterEntityPojoMapper.mapSubcategoryMasterEntityPojoMapping.apply(blogStackSubcategoryMasterOptional.get())).build());
     }
 
     @Override
-    public Optional<?> fetchAllSubcategories(Integer page, Integer size) {
+    public Optional<ServiceResponseBean> fetchAllSubcategories(Integer page, Integer size) {
         Page<BlogStackSubcategoryMaster> blogStackSubcategoryMasterPage = this.blogStackSubcategoryMasterRepository.findAll(PageRequest.of(page, size));
         LOGGER.debug("BlogStackQuestionMaster :: {}", blogStackSubcategoryMasterPage);
 
-        return CollectionUtils.isNotEmpty(blogStackSubcategoryMasterPage.toList()) ? Optional.of(ServiceResponseBean.builder()
+        if(CollectionUtils.isEmpty(blogStackSubcategoryMasterPage.toList()))
+            throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);
+
+        return Optional.of(ServiceResponseBean.builder()
                 .status(Boolean.TRUE).data(PageResponseBean.builder().payload(IBlogStackSubcategoryMasterEntityPojoMapper.mapSubcategoryMasterEntityListToPojoListMapping.apply(blogStackSubcategoryMasterPage.toList()))
                         .numberOfElements(blogStackSubcategoryMasterPage.getNumberOfElements())
                         .pageSize(blogStackSubcategoryMasterPage.getSize())
                         .totalElements(blogStackSubcategoryMasterPage.getTotalElements())
                         .totalPages(blogStackSubcategoryMasterPage.getTotalPages())
                         .currentPage(blogStackSubcategoryMasterPage.getNumber())
-                        .build()).build())
-                : Optional.of(new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND));
+                        .build()).build());
     }
 
     @Override
-    public Optional<?> fetchSubcategoryByCategoryId(String categoryId) {
+    public Optional<ServiceResponseBean> fetchSubcategoryByCategoryId(String categoryId) {
         Optional<List<BlogStackSubcategoryMaster>> blogStackSubcategoryMasterOptional = this.blogStackSubcategoryMasterRepository.findByBsscmCategoryId(categoryId);
-        LOGGER.info("BlogStackSubcategoryMasterOptional :: {}", blogStackSubcategoryMasterOptional);
+        LOGGER.warn("BlogStackSubcategoryMasterOptional :: {}", blogStackSubcategoryMasterOptional);
 
         if(blogStackSubcategoryMasterOptional.isEmpty())
-            return Optional.of(new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND));
+            throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);
 
         return Optional.of(ServiceResponseBean.builder().status(Boolean.TRUE).data(IBlogStackSubcategoryMasterEntityPojoMapper.mapSubcategoryMasterEntityListToPojoListMapping.apply(blogStackSubcategoryMasterOptional.get())).build());
     }
 
     @Override
-    public Optional<?> updateSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean) {
+    public Optional<ServiceResponseBean> updateSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean) {
         Optional<BlogStackSubcategoryMaster> blogStackSubcategoryMasterOptional = this.blogStackSubcategoryMasterRepository.findByBsscmSubcategoryId(subcategoryMasterRequestBean.getSubcategoryId());
-        LOGGER.info("BlogStackSubcategoryMasterOptional :: {}", blogStackSubcategoryMasterOptional);
+        LOGGER.warn("BlogStackSubcategoryMasterOptional :: {}", blogStackSubcategoryMasterOptional);
 
         if(blogStackSubcategoryMasterOptional.isEmpty())
-            return Optional.of(new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND));
+            throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);
 
         subcategoryMasterRequestBean.setModifiedBy(this.springApplicationName);
         BlogStackSubcategoryMaster blogStackSubcategoryMaster = IBlogStackSubcategoryMasterPojoEntityMapper.updateSubcategoryMaster.apply(subcategoryMasterRequestBean, blogStackSubcategoryMasterOptional.get());
@@ -111,12 +113,12 @@ public class BlogStackSubcategoryMasterService implements IBlogStackSubcategoryM
     }
 
     @Override
-    public Optional<?> deleteSubcategory(String subcategoryId) {
+    public Optional<ServiceResponseBean> deleteSubcategory(String subcategoryId) {
         Optional<BlogStackSubcategoryMaster> blogStackSubcategoryMasterOptional = this.blogStackSubcategoryMasterRepository.findByBsscmSubcategoryId(subcategoryId);
-        LOGGER.info("blogStackSubcategoryMasterOptional :: {}", blogStackSubcategoryMasterOptional);
+        LOGGER.warn("blogStackSubcategoryMasterOptional :: {}", blogStackSubcategoryMasterOptional);
 
         if(blogStackSubcategoryMasterOptional.isEmpty())
-            return Optional.of(new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND));
+            throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);
 
         blogStackSubcategoryMasterOptional.get().setBsscmStatus(SubcategoryMasterStatusEnum.DELETED.getValue());
         blogStackSubcategoryMasterOptional.get().setBsscmModifiedBy(springApplicationName);

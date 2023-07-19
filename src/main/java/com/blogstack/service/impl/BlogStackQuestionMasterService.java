@@ -6,10 +6,12 @@ import com.blogstack.beans.responses.ServiceResponseBean;
 import com.blogstack.commons.BlogStackMessageConstants;
 import com.blogstack.entities.BlogStackQuestionMaster;
 import com.blogstack.entity.pojo.mapper.IBlogStackQuestionMasterEntityPojoMapper;
+import com.blogstack.enums.AnswerMasterStatusEnum;
 import com.blogstack.enums.QuestionMasterStatusEnum;
 import com.blogstack.enums.UuidPrefixEnum;
 import com.blogstack.exceptions.BlogstackDataNotFoundException;
 import com.blogstack.pojo.entity.mapper.IBlogStackQuestionMasterPojoEntityMapper;
+import com.blogstack.repository.IBlogStackAnswerMasterRepository;
 import com.blogstack.repository.IBlogStackQuestionMasterRepository;
 import com.blogstack.service.IBlogStackQuestionMasterService;
 import com.blogstack.utils.BlogStackCommonUtils;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -35,16 +38,19 @@ public class BlogStackQuestionMasterService implements IBlogStackQuestionMasterS
     @Autowired
     private IBlogStackQuestionMasterRepository blogStackQuestionMasterRepository;
 
+    @Autowired
+    private IBlogStackAnswerMasterRepository blogStackAnswerMasterRepository;
+
     @Override
-    public Optional<?> addQuestion(QuestionMasterRequestBean questionMasterRequestBean) {
+    public Optional<ServiceResponseBean> addQuestion(QuestionMasterRequestBean questionMasterRequestBean) {
         Optional<BlogStackQuestionMaster> blogStackQuestionMasterOptional = this.blogStackQuestionMasterRepository.findByBsqmQuestionIgnoreCase(questionMasterRequestBean.getQuestion());
-        LOGGER.info("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
+        LOGGER.warn("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
 
         if(blogStackQuestionMasterOptional.isPresent())
             return Optional.of(ServiceResponseBean.builder().status(Boolean.FALSE).message(BlogStackMessageConstants.INSTANCE.ALREADY_EXIST).build());
 
         String questionId = BlogStackCommonUtils.INSTANCE.uniqueIdentifier(UuidPrefixEnum.QUESTION_ID.getValue());
-        LOGGER.info("QuestionId :: {}", questionId);
+        LOGGER.warn("QuestionId :: {}", questionId);
 
         questionMasterRequestBean.setQuestionId(questionId);
         questionMasterRequestBean.setCreatedBy(springApplicationName);
@@ -53,39 +59,41 @@ public class BlogStackQuestionMasterService implements IBlogStackQuestionMasterS
     }
 
     @Override
-    public Optional<?> fetchAllQuestion(Integer page, Integer size) {
+    public Optional<ServiceResponseBean> fetchAllQuestion(Integer page, Integer size) {
         Page<BlogStackQuestionMaster> blogStackQuestionMasterPage = this.blogStackQuestionMasterRepository.findAll(PageRequest.of(page, size));
         LOGGER.debug("BlogStackQuestionMaster :: {}", blogStackQuestionMasterPage);
 
-        return CollectionUtils.isNotEmpty(blogStackQuestionMasterPage.toList()) ? Optional.of(ServiceResponseBean.builder()
+        if (CollectionUtils.isEmpty(blogStackQuestionMasterPage.toList()))
+            throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);
+
+        return Optional.of(ServiceResponseBean.builder()
                 .status(Boolean.TRUE).data(PageResponseBean.builder().payload(IBlogStackQuestionMasterEntityPojoMapper.mapQuestionMasterEntityListToPojoListMapping.apply(blogStackQuestionMasterPage.toList()))
                         .numberOfElements(blogStackQuestionMasterPage.getNumberOfElements())
                         .pageSize(blogStackQuestionMasterPage.getSize())
                         .totalElements(blogStackQuestionMasterPage.getTotalElements())
                         .totalPages(blogStackQuestionMasterPage.getTotalPages())
                         .currentPage(blogStackQuestionMasterPage.getNumber())
-                        .build()).build())
-                : Optional.of(new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND));
+                        .build()).build());
     }
 
     @Override
-    public Optional<?> fetchQuestionById(String questionId) {
+    public Optional<ServiceResponseBean> fetchQuestionById(String questionId) {
         Optional<BlogStackQuestionMaster> blogStackQuestionMasterOptional = this.blogStackQuestionMasterRepository.findByBsqmQuestionId(questionId);
-        LOGGER.info("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
+        LOGGER.warn("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
 
         if(blogStackQuestionMasterOptional.isEmpty())
-            return Optional.of(new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND));
+            throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);
 
         return Optional.of(ServiceResponseBean.builder().status(Boolean.TRUE).data(IBlogStackQuestionMasterEntityPojoMapper.mapQuestionMasterEntityPojoMapping.apply(blogStackQuestionMasterOptional.get())).build());
     }
 
     @Override
-    public Optional<?> updateQuestion(QuestionMasterRequestBean questionMasterRequestBean) {
+    public Optional<ServiceResponseBean> updateQuestion(QuestionMasterRequestBean questionMasterRequestBean) {
         Optional<BlogStackQuestionMaster> blogStackQuestionMasterOptional = this.blogStackQuestionMasterRepository.findByBsqmQuestionId(questionMasterRequestBean.getQuestionId());
         LOGGER.debug("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
 
         if (blogStackQuestionMasterOptional.isEmpty())
-            return Optional.of(new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND));
+            throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);
 
         questionMasterRequestBean.setModifiedBy(this.springApplicationName);
         BlogStackQuestionMaster blogStackQuestionMaster = IBlogStackQuestionMasterPojoEntityMapper.updateQuestionMaster.apply(questionMasterRequestBean, blogStackQuestionMasterOptional.get());
@@ -96,16 +104,14 @@ public class BlogStackQuestionMasterService implements IBlogStackQuestionMasterS
     }
 
     @Override
-    public Optional<?> deleteQuestion(String questionId) {
+    public Optional<ServiceResponseBean> deleteQuestion(String questionId) {
         Optional<BlogStackQuestionMaster> blogStackQuestionMasterOptional = this.blogStackQuestionMasterRepository.findByBsqmQuestionId(questionId);
-        LOGGER.info("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
+        LOGGER.warn("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
 
         if(blogStackQuestionMasterOptional.isEmpty())
-            return Optional.of(new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND));
+            throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);
 
-        blogStackQuestionMasterOptional.get().setBsqmStatus(QuestionMasterStatusEnum.DELETED.getValue());
-        blogStackQuestionMasterOptional.get().setBsqmModifiedBy(springApplicationName);
-        this.blogStackQuestionMasterRepository.saveAndFlush(blogStackQuestionMasterOptional.get());
+        this.blogStackQuestionMasterRepository.delete(blogStackQuestionMasterOptional.get());
         return Optional.of(ServiceResponseBean.builder().status(Boolean.TRUE).message(BlogStackMessageConstants.INSTANCE.DATA_DELETED).build());
     }
 }

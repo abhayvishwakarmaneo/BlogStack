@@ -48,18 +48,18 @@ public class BlogStackAnswerMasterService implements IBlogStackAnswerMasterServi
     @Override
     public Optional<ServiceResponseBean> addAnswer(String questionId, AnswerMasterRequestBean answerMasterRequestBean) {
         Optional<BlogStackAnswerMaster> blogStackAnswerMasterOptional = this.blogStackAnswerMasterRepository.findByBsamAnswerIgnoreCase(answerMasterRequestBean.getAnswer());
-        LOGGER.info("BlogStackAnswerMasterOptional :: {}", blogStackAnswerMasterOptional);
+        LOGGER.warn("BlogStackAnswerMasterOptional :: {}", blogStackAnswerMasterOptional);
 
         if(blogStackAnswerMasterOptional.isPresent())
             return Optional.of(ServiceResponseBean.builder().status(Boolean.FALSE).message(BlogStackMessageConstants.INSTANCE.ALREADY_EXIST).build());
 
         String answerId = BlogStackCommonUtils.INSTANCE.uniqueIdentifier(UuidPrefixEnum.ANSWER_ID.getValue());
-        LOGGER.info("AnswerId :: {}", answerId);
+        LOGGER.warn("AnswerId :: {}", answerId);
 
         answerMasterRequestBean.setAnswerId(answerId);
         answerMasterRequestBean.setCreatedBy(this.springApplicationName);
         Optional<BlogStackQuestionMaster> blogStackQuestionMasterOptional = this.blogStackQuestionMasterRepository.findByBsqmQuestionId(questionId);
-        LOGGER.info("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
+        LOGGER.warn("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
 
         if (blogStackQuestionMasterOptional.isEmpty())
             throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);
@@ -77,7 +77,7 @@ public class BlogStackAnswerMasterService implements IBlogStackAnswerMasterServi
         Page<BlogStackAnswerMaster> blogStackAnswerMasterPage = this.blogStackAnswerMasterRepository.findAll(PageRequest.of(page, size));
         LOGGER.debug("BlogStackAnswerMasterPage :: {}", blogStackAnswerMasterPage);
 
-        if(CollectionUtils.isNotEmpty(blogStackAnswerMasterPage.toList()))
+        if(CollectionUtils.isEmpty(blogStackAnswerMasterPage.toList()))
             throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);
 
         return Optional.of(ServiceResponseBean.builder()
@@ -93,7 +93,7 @@ public class BlogStackAnswerMasterService implements IBlogStackAnswerMasterServi
     @Override
     public Optional<ServiceResponseBean> fetchAllAnswerByQuestionId(String questionId){
         Optional<BlogStackQuestionMaster> blogStackQuestionMasterOptional = this.blogStackQuestionMasterRepository.findByBsqmQuestionId(questionId);
-        LOGGER.info("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
+        LOGGER.warn("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
 
         if (blogStackQuestionMasterOptional.isEmpty())
             throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);
@@ -105,7 +105,7 @@ public class BlogStackAnswerMasterService implements IBlogStackAnswerMasterServi
     @Override
     public Optional<ServiceResponseBean> fetchAnswerById(String answerId) {
         Optional<BlogStackAnswerMaster> blogStackAnswerMasterOptional = this.blogStackAnswerMasterRepository.findByBsamAnswerId(answerId);
-        LOGGER.info("BlogStackAnswerMasterOptional :: {}", blogStackAnswerMasterOptional);
+        LOGGER.warn("BlogStackAnswerMasterOptional :: {}", blogStackAnswerMasterOptional);
 
         if(blogStackAnswerMasterOptional.isEmpty())
             throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);
@@ -132,21 +132,19 @@ public class BlogStackAnswerMasterService implements IBlogStackAnswerMasterServi
     @Override
     public Optional<ServiceResponseBean> deleteAnswer(String answerId) {
         Optional<BlogStackAnswerMaster> blogStackAnswerMasterOptional = this.blogStackAnswerMasterRepository.findByBsamAnswerId(answerId);
-        LOGGER.info("BlogStackAnswerMasterOptional :: {}", blogStackAnswerMasterOptional);
+        LOGGER.warn("BlogStackAnswerMasterOptional :: {}", blogStackAnswerMasterOptional);
 
         if(blogStackAnswerMasterOptional.isEmpty())
             throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);
 
-        blogStackAnswerMasterOptional.get().setBsamStatus(AnswerMasterStatusEnum.DELETED.getValue());
-        blogStackAnswerMasterOptional.get().setBsamModifiedBy(springApplicationName);
-        this.blogStackAnswerMasterRepository.saveAndFlush(blogStackAnswerMasterOptional.get());
+        this.blogStackAnswerMasterRepository.delete(blogStackAnswerMasterOptional.get());
         return Optional.of(ServiceResponseBean.builder().status(Boolean.TRUE).message(BlogStackMessageConstants.INSTANCE.DATA_DELETED).build());
     }
 
     @Override
     public Optional<ServiceResponseBean> deleteAllAnswer(String questionId) {
         Optional<BlogStackQuestionMaster> blogStackQuestionMasterOptional = this.blogStackQuestionMasterRepository.findByBsqmQuestionId(questionId);
-        LOGGER.info("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
+        LOGGER.warn("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
 
         if (blogStackQuestionMasterOptional.isEmpty())
             throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);

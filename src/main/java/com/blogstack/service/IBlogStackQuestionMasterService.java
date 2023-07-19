@@ -1,19 +1,20 @@
 package com.blogstack.service;
 
 import com.blogstack.beans.requests.QuestionMasterRequestBean;
+import com.blogstack.beans.responses.ServiceResponseBean;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
 public interface IBlogStackQuestionMasterService {
 
-    Optional<?> addQuestion(QuestionMasterRequestBean questionMasterRequestBean);
+    Optional<ServiceResponseBean> addQuestion(QuestionMasterRequestBean questionMasterRequestBean);
 
-    Optional<?> fetchAllQuestion(Integer page, Integer size);
+    Optional<ServiceResponseBean> fetchAllQuestion(Integer page, Integer size);
 
-    Optional<?> fetchQuestionById(String questionId);
+    Optional<ServiceResponseBean> fetchQuestionById(String questionId);
 
-    Optional<?> updateQuestion(QuestionMasterRequestBean questionMasterRequestBean);
+    Optional<ServiceResponseBean> updateQuestion(QuestionMasterRequestBean questionMasterRequestBean);
 
-    Optional<?> deleteQuestion(String questionId);
+    Optional<ServiceResponseBean> deleteQuestion(String questionId);
 }

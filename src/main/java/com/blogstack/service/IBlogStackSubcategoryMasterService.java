@@ -1,20 +1,21 @@
 package com.blogstack.service;
 
 import com.blogstack.beans.requests.SubcategoryMasterRequestBean;
+import com.blogstack.beans.responses.ServiceResponseBean;
 
 import java.util.Optional;
 
 public interface IBlogStackSubcategoryMasterService {
 
-    Optional<?> addSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean);
+    Optional<ServiceResponseBean> addSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean);
 
-    Optional<?> fetchSubcategoryById(String subcategoryId);
+    Optional<ServiceResponseBean> fetchSubcategoryById(String subcategoryId);
 
-    Optional<?> fetchAllSubcategories(Integer page, Integer size);
+    Optional<ServiceResponseBean> fetchAllSubcategories(Integer page, Integer size);
 
-    Optional<?> fetchSubcategoryByCategoryId(String categoryId);
+    Optional<ServiceResponseBean> fetchSubcategoryByCategoryId(String categoryId);
 
-    Optional<?> deleteSubcategory(String subcategoryId);
+    Optional<ServiceResponseBean> deleteSubcategory(String subcategoryId);
 
-    Optional<?> updateSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean);
+    Optional<ServiceResponseBean> updateSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean);
 }
