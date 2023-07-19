@@ -4,15 +4,17 @@ import com.blogstack.beans.requests.QuestionMasterRequestBean;
 import com.blogstack.entities.BlogStackQuestionMaster;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 public interface IBlogStackQuestionMasterService {
 
-    Mono<?> addQuestion(QuestionMasterRequestBean questionMasterRequestBean);
+    Optional<?> addQuestion(QuestionMasterRequestBean questionMasterRequestBean);
 
-    Mono<?> fetchAllQuestion(String filterCriteria, String sortCriteria, Integer page, Integer size, String... args);
+    Optional<?> fetchAllQuestion(Integer page, Integer size);
 
-    Mono<?> fetchQuestionById(String questionId);
+    Optional<?> fetchQuestionById(String questionId);
 
-    Mono<?> updateQuestion(QuestionMasterRequestBean questionMasterRequestBean);
+    Optional<?> updateQuestion(QuestionMasterRequestBean questionMasterRequestBean);
 
-    Mono<?> deleteQuestion(String questionId);
+    Optional<?> deleteQuestion(String questionId);
 }

@@ -4,50 +4,47 @@ import com.blogstack.beans.requests.SubcategoryMasterRequestBean;
 import com.blogstack.service.IBlogStackSubcategoryMasterService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
 @RestController
 @Validated
 @RequestMapping("/subcategory")
+@AllArgsConstructor
 public class BlogStackSubcategoryMasterController {
 
-    @Autowired
-    private IBlogStackSubcategoryMasterService iBlogStackSubcategoryMasterService;
+    private final IBlogStackSubcategoryMasterService blogStackSubcategoryMasterService;
 
     @PostMapping("/")
-    public Mono<?> addSubcategory(@Valid @RequestBody SubcategoryMasterRequestBean subcategoryMasterRequestBean){
-        return this.iBlogStackSubcategoryMasterService.addSubcategory(subcategoryMasterRequestBean);
+    public ResponseEntity<?> addSubcategory(@Valid @RequestBody SubcategoryMasterRequestBean subcategoryMasterRequestBean){
+        return ResponseEntity.ok(this.blogStackSubcategoryMasterService.addSubcategory(subcategoryMasterRequestBean));
     }
 
     @GetMapping("/")
-    public Mono<?> fetchAllSubcategory(@RequestParam(value = "filter_criteria", required = false) String filterCriteria,
-                                    @RequestParam(value = "sort_criteria", required = false) String sortCriteria,
-                                    @RequestParam(defaultValue = "0") Integer page,
-                                    @RequestParam(defaultValue = "2147483647") Integer size){
-        return this.iBlogStackSubcategoryMasterService.fetchAllSubcategories(filterCriteria, sortCriteria, page, size);
+    public ResponseEntity<?> fetchAllSubcategory(@RequestParam(defaultValue = "0") Integer page,
+                                    @RequestParam(defaultValue = "10") Integer size){
+        return ResponseEntity.ok(this.blogStackSubcategoryMasterService.fetchAllSubcategories(page, size));
     }
 
     @GetMapping("/{subcategory_id}")
-    public Mono<?> fetchSubcategoryById(@PathVariable(value = "subcategory_id") @NotBlank(message = "Subcategory Id can not be empty.") String subcategoryId){
-        return this.iBlogStackSubcategoryMasterService.fetchSubcategoryById(subcategoryId);
+    public ResponseEntity<?> fetchSubcategoryById(@PathVariable(value = "subcategory_id") @NotBlank(message = "Subcategory Id can not be empty.") String subcategoryId){
+        return ResponseEntity.ok(this.blogStackSubcategoryMasterService.fetchSubcategoryById(subcategoryId));
     }
 
     @PutMapping("/")
-    public Mono<?> updateSubcategory(@Valid @RequestBody SubcategoryMasterRequestBean subcategoryMasterRequestBean){
-        return this.iBlogStackSubcategoryMasterService.updateSubcategory(subcategoryMasterRequestBean);
+    public ResponseEntity<?> updateSubcategory(@Valid @RequestBody SubcategoryMasterRequestBean subcategoryMasterRequestBean){
+        return ResponseEntity.ok(this.blogStackSubcategoryMasterService.updateSubcategory(subcategoryMasterRequestBean));
     }
 
     @DeleteMapping("/{subcategory_id}")
-    public Mono<?> deleteSubcategory(@PathVariable(value = "subcategory_id") @NotBlank(message = "Subcategory Id can not be empty.") String subcategoryId){
-        return this.iBlogStackSubcategoryMasterService.deleteSubcategory(subcategoryId);
+    public ResponseEntity<?> deleteSubcategory(@PathVariable(value = "subcategory_id") @NotBlank(message = "Subcategory Id can not be empty.") String subcategoryId){
+        return ResponseEntity.ok(this.blogStackSubcategoryMasterService.deleteSubcategory(subcategoryId));
     }
 
     @GetMapping("/category_id/{category_id}")
-    public Mono<?> fetchSubcategoryByICategoryId(@PathVariable(value = "category_id") @NotBlank(message = "category Id can not be empty.") String categoryId){
-        return this.iBlogStackSubcategoryMasterService.fetchSubcategoryByCategoryId(categoryId);
+    public ResponseEntity<?> fetchSubcategoryByICategoryId(@PathVariable(value = "category_id") @NotBlank(message = "category Id can not be empty.") String categoryId){
+        return ResponseEntity.ok(this.blogStackSubcategoryMasterService.fetchSubcategoryByCategoryId(categoryId));
     }
-
 }

@@ -12,6 +12,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -67,4 +71,8 @@ public class BlogStackQuestionMaster implements Serializable {
     @LastModifiedDate
     @Column(name = "bsqm_modified_date")
     private LocalDateTime bsqmModifiedDate;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JoinColumn(name = "bsqm_question_id")
+    private Set<BlogStackAnswerMaster> blogStackAnswerMasterList ;
 }

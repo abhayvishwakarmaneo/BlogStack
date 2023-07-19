@@ -1,19 +1,20 @@
 package com.blogstack.service;
 
 import com.blogstack.beans.requests.SubcategoryMasterRequestBean;
-import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 public interface IBlogStackSubcategoryMasterService {
 
-    Mono<?> addSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean);
+    Optional<?> addSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean);
 
-    Mono<?> fetchSubcategoryById(String subcategoryId);
+    Optional<?> fetchSubcategoryById(String subcategoryId);
 
-    Mono<?> fetchAllSubcategories(String filterCriteria, String sortCriteria, Integer page, Integer size, String... args);
+    Optional<?> fetchAllSubcategories(Integer page, Integer size);
 
-    Mono<?> fetchSubcategoryByCategoryId(String categoryId);
+    Optional<?> fetchSubcategoryByCategoryId(String categoryId);
 
-    Mono<?> deleteSubcategory(String subcategoryId);
+    Optional<?> deleteSubcategory(String subcategoryId);
 
-    Mono<?> updateSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean);
+    Optional<?> updateSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean);
 }

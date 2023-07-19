@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.blogstack</groupId>
-    <artifactId>BlogStackMasterService</artifactId>
+    <artifactId>BlogStackQNAHubService</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>BlogStackMasterService</name>
     <description>BlogStackMasterService</description>

@@ -3,7 +3,7 @@ package com.blogstack.service.impl;
 import com.blogstack.beans.requests.SubcategoryMasterRequestBean;
 import com.blogstack.beans.responses.PageResponseBean;
 import com.blogstack.beans.responses.ServiceResponseBean;
-import com.blogstack.commons.BlogStackCommonConstants;
+import com.blogstack.commons.BlogStackMessageConstants;
 import com.blogstack.entities.BlogStackSubcategoryMaster;
 import com.blogstack.entity.pojo.mapper.IBlogStackSubcategoryMasterEntityPojoMapper;
 import com.blogstack.enums.SubcategoryMasterStatusEnum;
@@ -13,21 +13,15 @@ import com.blogstack.pojo.entity.mapper.IBlogStackSubcategoryMasterPojoEntityMap
 import com.blogstack.repository.IBlogStackSubcategoryMasterRepository;
 import com.blogstack.service.IBlogStackSubcategoryMasterService;
 import com.blogstack.utils.BlogStackCommonUtils;
-import com.blogstack.utils.BlogStackSpecificationUtils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,14 +39,13 @@ public class BlogStackSubcategoryMasterService implements IBlogStackSubcategoryM
     @Autowired
     private IBlogStackSubcategoryMasterPojoEntityMapper blogStackSubcategoryMasterPojoEntityMapper;
 
-
     @Override
-    public Mono<?> addSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean) {
+    public Optional<?> addSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean) {
         Optional<BlogStackSubcategoryMaster> blogStackSubcategoryMasterOptional = this.blogStackSubcategoryMasterRepository.findByBsscmSubcategoryIgnoreCase(subcategoryMasterRequestBean.getSubcategory());
         LOGGER.info("BlogStackSubcategoryMasterOptional :: {}", blogStackSubcategoryMasterOptional);
 
         if(blogStackSubcategoryMasterOptional.isPresent())
-            return Mono.just(ServiceResponseBean.builder().status(Boolean.FALSE).message("Subcategory Already Present.").build());
+            return Optional.of(ServiceResponseBean.builder().status(Boolean.FALSE).message("Subcategory Already Present.").build());
 
         String subcategoryId = BlogStackCommonUtils.INSTANCE.uniqueIdentifier(UuidPrefixEnum.SUBCATEGORY_ID.getValue());
         LOGGER.info("SubcategoryId :: {}", subcategoryId);
@@ -61,34 +54,25 @@ public class BlogStackSubcategoryMasterService implements IBlogStackSubcategoryM
         subcategoryMasterRequestBean.setCreatedBy(springApplicationName);
 
         BlogStackSubcategoryMaster blogStackSubcategoryMaster = this.blogStackSubcategoryMasterRepository.saveAndFlush(this.blogStackSubcategoryMasterPojoEntityMapper.INSTANCE.subcategoryMasterRequestToSubcategoryMasterEntity(subcategoryMasterRequestBean));
-        return Mono.just(ServiceResponseBean.builder().status(Boolean.TRUE).data(IBlogStackSubcategoryMasterEntityPojoMapper.mapSubcategoryMasterEntityPojoMapping.apply(blogStackSubcategoryMaster)).build());
+        return Optional.of(ServiceResponseBean.builder().status(Boolean.TRUE).data(IBlogStackSubcategoryMasterEntityPojoMapper.mapSubcategoryMasterEntityPojoMapping.apply(blogStackSubcategoryMaster)).build());
     }
 
     @Override
-    public Mono<?> fetchSubcategoryById(String subcategoryId) {
+    public Optional<?> fetchSubcategoryById(String subcategoryId) {
         Optional<BlogStackSubcategoryMaster> blogStackSubcategoryMasterOptional = this.blogStackSubcategoryMasterRepository.findByBsscmSubcategoryId(subcategoryId);
 
         if(blogStackSubcategoryMasterOptional.isEmpty())
-            return Mono.error(new BlogstackDataNotFoundException("DATA_NOT_FOUND"));
+            return Optional.of(new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND));
 
-        return Mono.just(ServiceResponseBean.builder().status(Boolean.TRUE).data(IBlogStackSubcategoryMasterEntityPojoMapper.mapSubcategoryMasterEntityPojoMapping.apply(blogStackSubcategoryMasterOptional.get())).build());
+        return Optional.of(ServiceResponseBean.builder().status(Boolean.TRUE).data(IBlogStackSubcategoryMasterEntityPojoMapper.mapSubcategoryMasterEntityPojoMapping.apply(blogStackSubcategoryMasterOptional.get())).build());
     }
 
     @Override
-    public Mono<?> fetchAllSubcategories(String filterCriteria, String sortCriteria, Integer page, Integer size, String... args) {
-        Specification<BlogStackSubcategoryMaster> specification = null;
-        if(StringUtils.isNotEmpty(filterCriteria)){
-            String entityFilterCriteria = BlogStackSpecificationUtils.INSTANCE.convertFilterCriteriaToEntityFilterCriteria(filterCriteria, "bsscm");
-            LOGGER.debug("EntityFilterCriteria :: {}", entityFilterCriteria);
-            specification = BlogStackSpecificationUtils.INSTANCE.buildSpecificaton(entityFilterCriteria, new ArrayList<>());
-        }
-
-        Sort sort = io.micrometer.common.util.StringUtils.isNotEmpty(sortCriteria) ? BlogStackSpecificationUtils.INSTANCE.convertSortCriteriaToEntitySortCriteria(sortCriteria, "bsscm") : Sort.by("bsscmSeqId").ascending();
-
-        Page<BlogStackSubcategoryMaster> blogStackSubcategoryMasterPage = this.blogStackSubcategoryMasterRepository.findAll(specification, PageRequest.of(page, size, sort));
+    public Optional<?> fetchAllSubcategories(Integer page, Integer size) {
+        Page<BlogStackSubcategoryMaster> blogStackSubcategoryMasterPage = this.blogStackSubcategoryMasterRepository.findAll(PageRequest.of(page, size));
         LOGGER.debug("BlogStackQuestionMaster :: {}", blogStackSubcategoryMasterPage);
 
-        return CollectionUtils.isNotEmpty(blogStackSubcategoryMasterPage.toList()) ? Mono.just(ServiceResponseBean.builder()
+        return CollectionUtils.isNotEmpty(blogStackSubcategoryMasterPage.toList()) ? Optional.of(ServiceResponseBean.builder()
                 .status(Boolean.TRUE).data(PageResponseBean.builder().payload(IBlogStackSubcategoryMasterEntityPojoMapper.mapSubcategoryMasterEntityListToPojoListMapping.apply(blogStackSubcategoryMasterPage.toList()))
                         .numberOfElements(blogStackSubcategoryMasterPage.getNumberOfElements())
                         .pageSize(blogStackSubcategoryMasterPage.getSize())
@@ -96,47 +80,47 @@ public class BlogStackSubcategoryMasterService implements IBlogStackSubcategoryM
                         .totalPages(blogStackSubcategoryMasterPage.getTotalPages())
                         .currentPage(blogStackSubcategoryMasterPage.getNumber())
                         .build()).build())
-                : Mono.error(new BlogstackDataNotFoundException(BlogStackCommonConstants.INSTANCE.DATA_NOT_FOUND));
+                : Optional.of(new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND));
     }
 
     @Override
-    public Mono<?> fetchSubcategoryByCategoryId(String categoryId) {
+    public Optional<?> fetchSubcategoryByCategoryId(String categoryId) {
         Optional<List<BlogStackSubcategoryMaster>> blogStackSubcategoryMasterOptional = this.blogStackSubcategoryMasterRepository.findByBsscmCategoryId(categoryId);
-        if(blogStackSubcategoryMasterOptional.isEmpty())
-            return Mono.error(new BlogstackDataNotFoundException(BlogStackCommonConstants.INSTANCE.DATA_NOT_FOUND));
+        LOGGER.info("BlogStackSubcategoryMasterOptional :: {}", blogStackSubcategoryMasterOptional);
 
-        return Mono.just(ServiceResponseBean.builder().status(Boolean.TRUE).data(IBlogStackSubcategoryMasterEntityPojoMapper.mapSubcategoryMasterEntityListToPojoListMapping.apply(blogStackSubcategoryMasterOptional.get())).build());
+        if(blogStackSubcategoryMasterOptional.isEmpty())
+            return Optional.of(new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND));
+
+        return Optional.of(ServiceResponseBean.builder().status(Boolean.TRUE).data(IBlogStackSubcategoryMasterEntityPojoMapper.mapSubcategoryMasterEntityListToPojoListMapping.apply(blogStackSubcategoryMasterOptional.get())).build());
     }
 
     @Override
-    public Mono<?> deleteSubcategory(String subcategoryId) {
-        Optional<BlogStackSubcategoryMaster> blogStackSubcategoryMasterOptional = this.blogStackSubcategoryMasterRepository.findByBsscmSubcategoryId(subcategoryId);
-
-        if(blogStackSubcategoryMasterOptional.isEmpty())
-            return Mono.error(new BlogstackDataNotFoundException(BlogStackCommonConstants.INSTANCE.DATA_NOT_FOUND));
-        LOGGER.info("blogStackSubcategoryMasterOptional :: {}",blogStackSubcategoryMasterOptional);
-
-        blogStackSubcategoryMasterOptional.get().setBsscmStatus(SubcategoryMasterStatusEnum.DELETED.getValue());
-        blogStackSubcategoryMasterOptional.get().setBsscmModifiedBy(springApplicationName);
-        this.blogStackSubcategoryMasterRepository.saveAndFlush(blogStackSubcategoryMasterOptional.get());
-        return Mono.just(ServiceResponseBean.builder().status(Boolean.TRUE).message("Subcategory Deleted").build());
-    }
-
-    @Override
-    public Mono<?> updateSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean) {
+    public Optional<?> updateSubcategory(SubcategoryMasterRequestBean subcategoryMasterRequestBean) {
         Optional<BlogStackSubcategoryMaster> blogStackSubcategoryMasterOptional = this.blogStackSubcategoryMasterRepository.findByBsscmSubcategoryId(subcategoryMasterRequestBean.getSubcategoryId());
         LOGGER.info("BlogStackSubcategoryMasterOptional :: {}", blogStackSubcategoryMasterOptional);
 
         if(blogStackSubcategoryMasterOptional.isEmpty())
-            return Mono.just(ServiceResponseBean.builder().status(Boolean.FALSE).message(BlogStackCommonConstants.INSTANCE.DATA_NOT_FOUND).build());
+            return Optional.of(new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND));
 
         subcategoryMasterRequestBean.setModifiedBy(this.springApplicationName);
-        BlogStackSubcategoryMaster blogStackSubcategoryMaster = this.blogStackSubcategoryMasterPojoEntityMapper.INSTANCE.updateSubcategoryMaster.apply(subcategoryMasterRequestBean, blogStackSubcategoryMasterOptional.get());
+        BlogStackSubcategoryMaster blogStackSubcategoryMaster = IBlogStackSubcategoryMasterPojoEntityMapper.updateSubcategoryMaster.apply(subcategoryMasterRequestBean, blogStackSubcategoryMasterOptional.get());
         LOGGER.debug("blogStackSubcategoryMaster :: {}", blogStackSubcategoryMaster);
 
         this.blogStackSubcategoryMasterRepository.saveAndFlush(blogStackSubcategoryMaster);
-        return Mono.just(ServiceResponseBean.builder().status(Boolean.TRUE).data(IBlogStackSubcategoryMasterEntityPojoMapper.mapSubcategoryMasterEntityPojoMapping.apply(blogStackSubcategoryMaster)).build());
+        return Optional.of(ServiceResponseBean.builder().status(Boolean.TRUE).data(IBlogStackSubcategoryMasterEntityPojoMapper.mapSubcategoryMasterEntityPojoMapping.apply(blogStackSubcategoryMaster)).build());
     }
 
+    @Override
+    public Optional<?> deleteSubcategory(String subcategoryId) {
+        Optional<BlogStackSubcategoryMaster> blogStackSubcategoryMasterOptional = this.blogStackSubcategoryMasterRepository.findByBsscmSubcategoryId(subcategoryId);
+        LOGGER.info("blogStackSubcategoryMasterOptional :: {}", blogStackSubcategoryMasterOptional);
 
+        if(blogStackSubcategoryMasterOptional.isEmpty())
+            return Optional.of(new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND));
+
+        blogStackSubcategoryMasterOptional.get().setBsscmStatus(SubcategoryMasterStatusEnum.DELETED.getValue());
+        blogStackSubcategoryMasterOptional.get().setBsscmModifiedBy(springApplicationName);
+        this.blogStackSubcategoryMasterRepository.saveAndFlush(blogStackSubcategoryMasterOptional.get());
+        return Optional.of(ServiceResponseBean.builder().status(Boolean.TRUE).message(BlogStackMessageConstants.INSTANCE.DATA_DELETED).build());
+    }
 }
