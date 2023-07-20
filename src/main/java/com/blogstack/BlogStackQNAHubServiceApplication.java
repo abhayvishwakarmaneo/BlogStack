@@ -4,11 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-
-public class BlogStackMasterServiceApplication {
-
+public class BlogStackQNAHubServiceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(BlogStackMasterServiceApplication.class, args);
+        SpringApplication.run(BlogStackQNAHubServiceApplication.class, args);
     }
 
 }
