@@ -16,6 +16,7 @@ public interface IBlogStackQuestionMasterEntityPojoMapper {
             .codeSnippet(blogStackQuestionMaster.getBsqmCodeSnippet())
             .categoryId(blogStackQuestionMaster.getBsqmCategoryId())
             .subCategoryId(blogStackQuestionMaster.getBsqmSubCategoryId())
+            .blogStackAnswers(blogStackQuestionMaster.getBlogStackAnswerMasterList())
             .status(blogStackQuestionMaster.getBsqmStatus())
             .addedOn(blogStackQuestionMaster.getBsqmCreatedDate())
             .build();
@@ -30,6 +31,7 @@ public interface IBlogStackQuestionMasterEntityPojoMapper {
                         .codeSnippet(blogStackQuestionMaster.getBsqmCodeSnippet())
                         .categoryId(blogStackQuestionMaster.getBsqmCategoryId())
                         .subCategoryId(blogStackQuestionMaster.getBsqmSubCategoryId())
+                        .blogStackAnswers(blogStackQuestionMaster.getBlogStackAnswerMasterList())
                         .status(blogStackQuestionMaster.getBsqmStatus())
                         .addedOn(blogStackQuestionMaster.getBsqmCreatedDate());
                 return questionMasterResponseBeanBuilder.build();

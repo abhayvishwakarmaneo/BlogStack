@@ -1,18 +1,20 @@
 package com.blogstack.service;
 
 import com.blogstack.beans.requests.QuestionMasterRequestBean;
-import com.blogstack.entities.BlogStackQuestionMaster;
+import com.blogstack.beans.responses.ServiceResponseBean;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 public interface IBlogStackQuestionMasterService {
 
-    Mono<?> addQuestion(QuestionMasterRequestBean questionMasterRequestBean);
+    Optional<ServiceResponseBean> addQuestion(QuestionMasterRequestBean questionMasterRequestBean);
 
-    Mono<?> fetchAllQuestion(String filterCriteria, String sortCriteria, Integer page, Integer size, String... args);
+    Optional<ServiceResponseBean> fetchAllQuestion(Integer page, Integer size);
 
-    Mono<?> fetchQuestionById(String questionId);
+    Optional<ServiceResponseBean> fetchQuestionById(String questionId);
 
-    Mono<?> updateQuestion(QuestionMasterRequestBean questionMasterRequestBean);
+    Optional<ServiceResponseBean> updateQuestion(QuestionMasterRequestBean questionMasterRequestBean);
 
-    Mono<?> deleteQuestion(String questionId);
+    Optional<ServiceResponseBean> deleteQuestion(String questionId);
 }

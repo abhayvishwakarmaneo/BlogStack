@@ -3,12 +3,12 @@ server:
 
 spring:
   application:
-    name: ${MASTER_SERVICE_APPLICATION_NAME:BlogStackMasterService}
+    name: BlogStackMasterService
 
   datasource:
-    url: ${MASTER_SERVICE_DATABASE_URL:jdbc:postgresql://localhost:5432/BlogStackMaster}
-    username: ${MASTER_SERVICE_DATABASE_USERNAME:postgres}
-    password: ${MASTER_SERVICE_DATABASE_PASSWORD:root}
+    url: jdbc:postgresql://localhost:5432/BlogStackMaster
+    username: postgres
+    password: root
 
   jpa:
     hibernate:

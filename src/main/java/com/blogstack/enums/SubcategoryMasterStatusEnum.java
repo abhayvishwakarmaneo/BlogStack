@@ -7,18 +7,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-public enum UuidPrefixEnum {
+public enum SubcategoryMasterStatusEnum {
 
-    ANSWER_ID("ANSWER_ID_"),
-
-    QUESTION_ID("QUESTION_ID_"),
-
-    SUBCATEGORY_ID("SUBCATEGORY_ID_");
+    ACTIVE("ACTIVE"),
+    INACTIVE("INACTIVE"),
+    DELETED("DELETED");
 
     @Getter
     private String value;
 
     public static List<String> getAllValues() {
-        return List.of(UuidPrefixEnum.values()).stream().map(data -> data.value).collect(Collectors.toList());
+        return List.of(SubcategoryMasterStatusEnum.values()).stream().map(data -> data.value).collect(Collectors.toList());
     }
+
 }

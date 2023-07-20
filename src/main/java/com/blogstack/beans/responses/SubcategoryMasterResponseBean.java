@@ -1,7 +1,6 @@
 package com.blogstack.beans.responses;
 
 import com.blogstack.commons.BlogStackCommonConstants;
-import com.blogstack.entities.BlogStackAnswerMaster;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,39 +11,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class QuestionMasterResponseBean {
-    @JsonProperty(value = "question_id")
-    private String questionId;
+public class SubcategoryMasterResponseBean {
 
-    @NotNull(message = "Question can not be empty.")
-    private String question;
-
-    private String status;
-
-    @JsonProperty(value = "user_id")
-    private String userId;
-
-    @JsonProperty(value = "code_snippet")
-    private String codeSnippet;
-
-    @JsonProperty(value = "tag_id")
-    private String tagId;
+    @JsonProperty(value = "subcategory_id")
+    private String subcategoryId;
 
     @JsonProperty(value = "category_id")
     private String categoryId;
 
-    @JsonProperty(value = "sub_category_id")
-    private String subCategoryId;
+    @NotNull(message = "Subcategory can not be empty.")
+    private String subcategory;
 
-    @JsonProperty(value = "answers")
-    private Set<BlogStackAnswerMaster> blogStackAnswers;
+    private String status;
 
     @JsonProperty(value = "added_on")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = BlogStackCommonConstants.DATE_FORMAT)
