@@ -50,7 +50,7 @@ public class BlogStackAnswerMasterController {
     }
 
     @DeleteMapping("/question/{questionId}")
-    public ResponseEntity<?> deleteAllAnswer(@PathVariable(value = "questionId") @NotBlank(message = "Answer Id can not be empty.") String questionId){
-        return ResponseEntity.ok(this.blogStackAnswerMasterService.deleteAllAnswer(questionId));
+    public ResponseEntity<?> deleteAllAnswerByQuestionId(@PathVariable(value = "questionId") @NotBlank(message = "Answer Id can not be empty.") String questionId){
+        return ResponseEntity.ok(this.blogStackAnswerMasterService.deleteAllAnswerByQuestionId(questionId));
     }
 }

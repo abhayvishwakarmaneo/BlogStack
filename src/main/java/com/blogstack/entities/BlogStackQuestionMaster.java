@@ -72,7 +72,7 @@ public class BlogStackQuestionMaster implements Serializable {
     @Column(name = "bsqm_modified_date")
     private LocalDateTime bsqmModifiedDate;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "bsqm_question_id")
-    private Set<BlogStackAnswerMaster> blogStackAnswerMasterList ;
+    private Set<BlogStackAnswerMaster> blogStackAnswerMasterList;
 }
