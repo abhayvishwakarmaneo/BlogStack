@@ -13,7 +13,9 @@ public enum UuidPrefixEnum {
 
     QUESTION_ID("QUESTION_ID_"),
 
-    SUBCATEGORY_ID("SUBCATEGORY_ID_");
+    SUBCATEGORY_ID("SUBCATEGORY_ID_"),
+
+    COMMENT_ID("COMMENT_ID_");
 
     @Getter
     private String value;
