@@ -11,8 +11,8 @@
     <groupId>com.blogstack</groupId>
     <artifactId>BlogStackQNAHubService</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>BlogStackMasterService</name>
-    <description>BlogStackMasterService</description>
+    <name>BlogStackQNAHubService</name>
+    <description>BlogStackQNAHubService</description>
     <properties>
         <java.version>20</java.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
@@ -123,7 +123,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>blogstack-master-service</finalName>
+        <finalName>blogstack-qna-hub-service</finalName>
     </build>
 
 </project>

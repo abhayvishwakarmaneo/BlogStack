@@ -12,9 +12,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -72,7 +69,7 @@ public class BlogStackQuestionMaster implements Serializable {
     @Column(name = "bsqm_modified_date")
     private LocalDateTime bsqmModifiedDate;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "bsqm_question_id")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "bsam_question_id", referencedColumnName = "bsqm_question_id")
     private Set<BlogStackAnswerMaster> blogStackAnswerMasterList;
 }

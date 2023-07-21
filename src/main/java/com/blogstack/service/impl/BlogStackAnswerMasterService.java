@@ -10,6 +10,7 @@ import com.blogstack.entity.pojo.mapper.IBlogStackAnswerMasterEntityPojoMapper;
 import com.blogstack.entity.pojo.mapper.IBlogStackQuestionMasterEntityPojoMapper;
 import com.blogstack.enums.AnswerMasterStatusEnum;
 import com.blogstack.enums.UuidPrefixEnum;
+import com.blogstack.exceptions.BlogStackCustomException;
 import com.blogstack.exceptions.BlogstackDataNotFoundException;
 import com.blogstack.pojo.entity.mapper.IBlogStackAnswerMasterPojoEntityMapper;
 import com.blogstack.repository.IBlogStackAnswerMasterRepository;
@@ -55,7 +56,7 @@ public class BlogStackAnswerMasterService implements IBlogStackAnswerMasterServi
         LOGGER.warn("BlogStackAnswerMasterOptional :: {}", blogStackAnswerMasterOptional);
 
         if(blogStackAnswerMasterOptional.isPresent())
-            return Optional.of(ServiceResponseBean.builder().status(Boolean.FALSE).message(BlogStackMessageConstants.INSTANCE.ALREADY_EXIST).build());
+            throw new BlogStackCustomException(BlogStackMessageConstants.INSTANCE.ALREADY_EXIST);
 
         String answerId = BlogStackCommonUtils.INSTANCE.uniqueIdentifier(UuidPrefixEnum.ANSWER_ID.getValue());
         LOGGER.warn("AnswerId :: {}", answerId);
@@ -70,8 +71,6 @@ public class BlogStackAnswerMasterService implements IBlogStackAnswerMasterServi
 
         Optional<BlogStackQuestionMaster> blogStackQuestionsAnswerMasterOptional = blogStackQuestionMasterOptional.map(question -> {
             question.getBlogStackAnswerMasterList().add(IBlogStackAnswerMasterPojoEntityMapper.INSTANCE.answerMasterRequestToAnswerMasterEntity(answerMasterRequestBean));
-
-//            return this.blogStackAnswerMasterRepository.saveAndFlush(IBlogStackAnswerMasterPojoEntityMapper.INSTANCE.answerMasterRequestToAnswerMasterEntity(answerMasterRequestBean));
             return this.blogStackQuestionMasterRepository.saveAndFlush(question);
         });
         return Optional.of(ServiceResponseBean.builder().status(Boolean.TRUE).data(IBlogStackQuestionMasterEntityPojoMapper.mapQuestionMasterEntityPojoMapping.apply(blogStackQuestionsAnswerMasterOptional.get())).build());
@@ -154,27 +153,8 @@ public class BlogStackAnswerMasterService implements IBlogStackAnswerMasterServi
         if (blogStackQuestionMasterOptional.isEmpty())
             throw new BlogstackDataNotFoundException(BlogStackMessageConstants.INSTANCE.DATA_NOT_FOUND);
 
-
-        Set<BlogStackAnswerMaster> blogStackAnswerMasterList = blogStackQuestionMasterOptional.get().getBlogStackAnswerMasterList();
-        LOGGER.warn("BlogStackAnswerMasterList :: {}", blogStackAnswerMasterList);
         blogStackQuestionMasterOptional.get().getBlogStackAnswerMasterList().clear();
         this.blogStackQuestionMasterRepository.saveAndFlush(blogStackQuestionMasterOptional.get());
-
-        this.blogStackAnswerMasterRepository.deleteAll(blogStackAnswerMasterList);
-
-//        List<Set<BlogStackAnswerMaster>> mappedAnswerList = blogStackQuestionMasterOptional.stream().map(BlogStackQuestionMaster::getBlogStackAnswerMasterList).toList();
-//        mappedAnswerList.forEach(blogStackAnswerMastersList -> this.blogStackAnswerMasterRepository.deleteAll(blogStackAnswerMastersList));
-
-//        blogStackQuestionMasterOptional
-//                .stream()
-//                .flatMap(questionMaster -> questionMaster.getBlogStackAnswerMasterList().stream())
-//                .forEach(blogStackAnswerMasterRepository::delete);
-
-
-//        blogStackQuestionMasterOptional.get().setBlogStackAnswerMasterList(null);
-//        blogStackQuestionMasterOptional.get().setBsqmModifiedDate(LocalDateTime.now());
-//        blogStackQuestionMasterOptional.get().setBsqmModifiedBy(this.springApplicationName);
-
         return Optional.of(ServiceResponseBean.builder().status(Boolean.TRUE).message(BlogStackMessageConstants.INSTANCE.DATA_DELETED).build());
     }
 }
