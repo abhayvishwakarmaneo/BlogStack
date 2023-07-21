@@ -8,6 +8,7 @@ import com.blogstack.entities.BlogStackSubcategoryMaster;
 import com.blogstack.entity.pojo.mapper.IBlogStackSubcategoryMasterEntityPojoMapper;
 import com.blogstack.enums.SubcategoryMasterStatusEnum;
 import com.blogstack.enums.UuidPrefixEnum;
+import com.blogstack.exceptions.BlogStackCustomException;
 import com.blogstack.exceptions.BlogstackDataNotFoundException;
 import com.blogstack.pojo.entity.mapper.IBlogStackSubcategoryMasterPojoEntityMapper;
 import com.blogstack.repository.IBlogStackSubcategoryMasterRepository;
@@ -45,7 +46,7 @@ public class BlogStackSubcategoryMasterService implements IBlogStackSubcategoryM
         LOGGER.warn("BlogStackSubcategoryMasterOptional :: {}", blogStackSubcategoryMasterOptional);
 
         if(blogStackSubcategoryMasterOptional.isPresent())
-            return Optional.of(ServiceResponseBean.builder().status(Boolean.FALSE).message("Subcategory Already Present.").build());
+            throw new BlogStackCustomException(BlogStackMessageConstants.INSTANCE.ALREADY_EXIST);
 
         String subcategoryId = BlogStackCommonUtils.INSTANCE.uniqueIdentifier(UuidPrefixEnum.SUBCATEGORY_ID.getValue());
         LOGGER.warn("SubcategoryId :: {}", subcategoryId);

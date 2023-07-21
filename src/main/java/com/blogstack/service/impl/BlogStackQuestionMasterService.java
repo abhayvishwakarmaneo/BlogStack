@@ -9,6 +9,7 @@ import com.blogstack.entity.pojo.mapper.IBlogStackQuestionMasterEntityPojoMapper
 import com.blogstack.enums.AnswerMasterStatusEnum;
 import com.blogstack.enums.QuestionMasterStatusEnum;
 import com.blogstack.enums.UuidPrefixEnum;
+import com.blogstack.exceptions.BlogStackCustomException;
 import com.blogstack.exceptions.BlogstackDataNotFoundException;
 import com.blogstack.pojo.entity.mapper.IBlogStackQuestionMasterPojoEntityMapper;
 import com.blogstack.repository.IBlogStackAnswerMasterRepository;
@@ -47,7 +48,7 @@ public class BlogStackQuestionMasterService implements IBlogStackQuestionMasterS
         LOGGER.warn("BlogStackQuestionMasterOptional :: {}", blogStackQuestionMasterOptional);
 
         if(blogStackQuestionMasterOptional.isPresent())
-            return Optional.of(ServiceResponseBean.builder().status(Boolean.FALSE).message(BlogStackMessageConstants.INSTANCE.ALREADY_EXIST).build());
+            throw new BlogStackCustomException(BlogStackMessageConstants.INSTANCE.ALREADY_EXIST);
 
         String questionId = BlogStackCommonUtils.INSTANCE.uniqueIdentifier(UuidPrefixEnum.QUESTION_ID.getValue());
         LOGGER.warn("QuestionId :: {}", questionId);
